@@ -1,9 +1,27 @@
 /*
- * # wanted-cloud/terraform-module-template
+ * # wanted-cloud/terraform-azure-management-lock
  * 
- * This repository represents a template for a Terraform building block module as we think it should be done, so it's for sure opinionated but in our eyes simple and powerful. Feel free to use or contribute.
+ * Terraform building block for locking Azure resources.
  */
 
-/*
- * Here is perfect place for you main resource which should be created by this module. Use "this" as name for the main resource and its dependencies.
- */
+resource "azurerm_management_lock" "this" {
+  name       = var.name
+  scope      = var.scope_id
+  lock_level = var.lock_level
+  notes      = var.notes
+
+  timeouts {
+    create = try(
+      local.metadata.resource_timeouts["azurerm_management_lock"]["create"],
+      local.metadata.resource_timeouts["default"]["create"]
+    )
+    read = try(
+      local.metadata.resource_timeouts["azurerm_management_lock"]["read"],
+      local.metadata.resource_timeouts["default"]["read"]
+    )
+    delete = try(
+      local.metadata.resource_timeouts["azurerm_management_lock"]["delete"],
+      local.metadata.resource_timeouts["default"]["delete"]
+    )
+  }
+}
